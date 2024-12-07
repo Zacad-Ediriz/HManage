@@ -17,7 +17,7 @@ class InvoiceController extends Controller
     public function index()
     {
         $invoice = invoice::with('mypi', 'myacount')->get();
-        $data['patient'] = patient::get();
+        $data['patient'] = patient::get();   
         $data['acount'] = Account::get();
         return view('invoice.index', compact('invoice'), $data);
     }
@@ -59,12 +59,13 @@ class InvoiceController extends Controller
 
         if ($amount_paid >= $amount) {
             $payment_status = 'paid';
+            
         } elseif ($amount_paid > 0) {
             $payment_status = 'partial';
         } else {
             $payment_status = 'pending';
         }
-        $validatedData["payment_status"] = $balance;
+        $validatedData["payment_status"] =  $payment_status;
 
         $validatedData["appointment_status"] = "0";
         $myinvoice = invoice::create($validatedData);

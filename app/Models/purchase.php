@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\vendor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,4 +20,8 @@ class purchase extends Model
         'payment_method',
         'payment_status',
     ];
+    public function mypi()
+    {
+        return $this->belongsTo(vendor::class, 'vendor');
+    }
 }

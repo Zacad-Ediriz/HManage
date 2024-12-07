@@ -376,7 +376,7 @@
 
         $("document").ready(function() {
             $("#vendor").on("change", async function() {
-                let res = await $.post("{{ route('getvendorBalance') }}", {
+                let res = await $.post("{{ route('getvendorsBalance') }}", {
                     vendor: $(this).val(),
                     _token: "{{ csrf_token() }}"
                 })

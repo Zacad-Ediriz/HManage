@@ -65,7 +65,7 @@ class PurchaseController extends Controller
         } else {
             $payment_status = 'pending';
         }
-        $validatedData["payment_status"] = $balance;
+        $validatedData["payment_status"] = $payment_status;
 
         $myinvoice = purchase::create($validatedData);
 
@@ -169,9 +169,9 @@ class PurchaseController extends Controller
 
         return response()->json($items);
     }
-    public function getvendorBalance(Request $request)
+    public function getvendorsBalance(Request $request)
     {
-        $amount = vendor::where('id', $request->patient)->first();
+        $amount = vendor::where('id', $request->vendor)->first();
         return response()->json($amount);
     }
 

@@ -16,4 +16,16 @@ class patient extends Model
       'balance',
       'remarks',
     ];
+    public function scheduless()
+    {
+        return $this->hasMany(ScheduleDoctor::class);
+    }
+    
+        public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patient', 'id');
+    }
+        
+    
+   
 }

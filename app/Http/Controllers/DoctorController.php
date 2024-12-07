@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Doctor;
 use App\Models\patient;
 use App\Models\product;
@@ -107,4 +108,99 @@ class DoctorController extends Controller
         $data['product'] = product::count();
         return view('dashbourd', $data);
     }
+    public function userdashboard()
+    {
+        $data['Doctors'] = doctor::count();
+        $data['patient'] = patient::count();
+        $data['Appointment'] = Appointment::count();
+        $data['product'] = product::count();
+        return view('userdashbourd', $data);
+
+    }
+
+
+
+
+
+
+
+
+
+    public function userindex()
+    {
+        $user = User::all();
+        return view('User', compact('user'));
+    }
+
+
+
+    public function usercreate()
+    {
+        return view('user');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function userstore(Request $request)
+    {
+
+        DB::beginTransaction();
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'type' => 'required',
+            'password' => 'required',
+        ]);
+
+
+        User::create($validatedData);
+        DB::commit();
+
+        return redirect('userss')->with('message', 'userss added successfully');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function usershow(Doctor $doctor)
+    {
+        return view('user');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function useredit(string $id)
+    {
+        return User::where('id', $id)->get();
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function userupdate(Request $request, User $user)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'type' => 'required',
+            'password' => 'required',
+        ]);
+
+        $user->update($validatedData);
+
+        return redirect('userss')->with('message', 'userss updated successfully');
+    }
+    public function userdestroy(string $id)
+    {
+        User::find($id)->delete();
+        return redirect('userss')->with('message', 'userss deleted successfully');
+    }
+
+
+
+
+
 }

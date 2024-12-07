@@ -19,7 +19,7 @@ class PayBillsController extends Controller
         $paybills = pay_bills::all();
         $data['vendor'] = vendor::get();
         $data['purchase'] = purchase::where('payment_status', 'pending')
-            ->orWhere('payment_status', 'partial')
+            ->orWhere('payment_status', 'partial')->with('mypi')
             ->get();
         $data['acount'] = Account::get();
         return view('paybills.index', compact('paybills'), $data);

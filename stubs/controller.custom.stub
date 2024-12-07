@@ -1,0 +1,137 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+
+class {{ class }} extends Controller
+{
+    public function __construct()
+    {
+        // Module Data
+        $this->title = ""; //title
+        $this->route = 'admin.shifts'; //Route
+        $this->view = 'admin.shift'; //the view folder
+        $this->path = 'shift'; //the path
+        $this->access = 'shift'; //the permission
+        $this->context_model = '';
+
+
+        $this->middleware('permission:'.$this->access.'-view', ['only' => ['index','data']]);
+        $this->middleware('permission:'.$this->access.'-update', ['only' => ['getSingle']]);
+        $this->middleware('permission:'.$this->access.'-delete', ['only' => ['delete']]);
+    }
+
+    public function index() :View
+    {
+        //
+        $data['title'] = $this->title;
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['path'] = $this->path;
+        $data['access'] = $this->access;
+
+
+        return view($this->view.'.index', $data);
+    }
+
+    function data(Request $request){
+        $items = $this->context_model::get();
+        $data = [];
+        $counter = 1;
+        foreach ($items as  $item) {
+            $action = "";
+            if(auth()->user()->can($this->access.'-update')){
+             $url = route($this->route.'.getSingle');
+                $action .= "<button type='button'
+                            class='btn btn-icon btn-success btn-sm mx-2'
+                            onclick=updatefn('$url',$item->id) title='update this row'>
+                            <i class='fas fa-edit'></i>
+                            </button>";
+            }
+            if(auth()->user()->can($this->access.'-delete')){
+                $delete_url = route($this->route.'.delete');
+                $action .= "<button type='button'
+                            class='btn btn-icon btn-danger btn-sm'
+                            onclick=deletefn('$delete_url',$item->id) title='delete this row'>
+                            <i class='fas fa-trash'></i>
+                            </button>";
+            }
+
+            $status = "";
+            if($item?->status == "enabled"){
+                $status = "<span class='badge bg-success'> Enabled </span>";
+            }else if($item?->status == "disabled"){
+                $status = "<span class='badge bg-danger'> Disabled </span>";
+            }
+
+
+            $data[] = [
+                $counter,
+                $status,
+                $action
+            ];
+            $counter++;
+        }
+        return $data;
+    }
+
+
+    function getSingle(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required'
+            ]);
+            return $this->context_model::findorfail($request->id);
+        } catch (\Exception $th) {
+            return response("Something went wrong!!!", 500);
+        }
+    }
+
+    function create(Request $request){
+        $data = $request->validate([
+        ]);
+
+        try {
+            if($request->has("id") && $request->filled("id") && auth()->user()->can($this->access.'-update') ){
+                $context_model = $this->context_model::findorfail($request->input("id"));
+                $context_model->update($data);
+                return response("Successfully updated the ".$this->title);
+            }else if(!$request->filled("id") && auth()->user()->can($this->access.'-create')){
+                $data["created_by"] = auth()->user()->id;
+                $data["hospital_id"] = auth()->user()->hospital_id;
+                $data["branch_id"] = auth()->user()->branch_id;
+                $this->context_model::create($data);
+                return response("Successfully created new ".$this->title);
+            }else{
+                return response("You dont permission to perform this task!!!", 500);
+            }
+        } catch (\Throwable $th) {
+            return response("Something went wrong!!!",500);
+        }
+    }
+
+    function delete(Request $request){
+        $data = $request->validate([
+            "id" => "required"
+        ]);
+        try {
+            /*if (Fine::where(["id" => $data["id"], "status" => "deducted"])->exists()){
+                return response("This fine is already deducted from the employee and can not be deleted!!!!!!!",500);
+            }*/
+            $model = $this->context_model::findorfail($data["id"]);
+            $model->delete();
+            return response("Successfully deleted ".$this->title);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response("Something went wrong!!!",500);
+        }
+    }
+
+
+
+}

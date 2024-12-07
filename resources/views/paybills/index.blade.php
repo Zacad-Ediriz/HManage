@@ -30,7 +30,7 @@
                                 <option>Choose a vendor</option>
                                 @foreach ($purchase as $row)
                                     {
-                                    <option value="{{ $row?->id }}">{{ $row?->vendor }}</option>
+                                    <option value="{{ $row?->id }}">{{ $row?->mypi->name }}</option>
                                     }
                                 @endforeach
                             </select>

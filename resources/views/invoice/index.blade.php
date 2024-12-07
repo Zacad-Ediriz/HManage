@@ -379,7 +379,7 @@
 
                         if (selectedType === "Service") {
                             $(this).closest('.row').find("input[name='qty[]']").closest('.form-group')
-                                .hide();
+                                .show();
                         } else {
                             $(this).closest('.row').find("input[name='qty[]']").closest('.form-group')
                                 .show();

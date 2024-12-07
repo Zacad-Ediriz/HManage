@@ -50,8 +50,8 @@ class RoleController extends Controller
 
 
             if (auth()->user()->can($this->access . '-givepermission')) {
-            $permission_url = route($this->route . '.givePermission', $item->id);
-            $action .= "<a href='javascript:;' class='btn btn-sm btn-light btn-active-light-primary ms-2' onclick=location.href='$permission_url'>
+                $permission_url = route($this->route . '.givePermission', $item->id);
+                $action .= "<a href='javascript:;' class='btn btn-sm btn-light btn-active-light-primary ms-2' onclick=location.href='$permission_url'>
            Give permission
                         </a>";
             }

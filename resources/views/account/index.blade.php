@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -21,7 +21,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="col-md-12 mx-auto" id="accountForm" action="{{ route('account') }}" method="post">
+                    <form class="col-md-12 mx-auto" id="accountForm" action="/account" method="post">
                         @csrf
                         <div class="form-group mb-3">
                             <label class="form-label">Account Number</label>
@@ -52,103 +52,85 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>account_name</th>
-                    <th>account_number</th>
-                    <th>account balance</th>
+                    <th>Account Name</th>
+                    <th>Account Number</th>
+                    <th>Account Balance</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($account as $row)
+                @foreach ($account as $row) <!-- Assuming your collection is $accounts -->
                     <tr>
                         <td>{{ $row->id }}</td>
                         <td>{{ $row->account_name }}</td>
                         <td>{{ $row->account_number }}</td>
                         <td>{{ $row->account_balance }}</td>
-                        <td><a href="#" onclick="updatefn({{ $row['id'] }})" class="btn btn-success"><i
-                                    class="fa fa-edit"></i> </a>
-                        <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-trush"> <i
-                                    class="fa fa-trash"> </i></a></td>
+                        <td>
+                            <a href="#" onclick="updatefn({{ $row->id }})" class="btn btn-success"><i class="fa fa-edit"></i></a>
+                            <a href="#" onclick="deletefn({{ $row->id }})" class="btn btn-danger btn-trush"><i class="fa fa-trash"></i></a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-
     </div>
 @endsection
 
-
-
-
 @section('scripts')
     <script>
-        $("document").ready(function() {
-
+        $(document).ready(function() {
             $("#table").DataTable();
-        })
+        });
+
         const updatefn = (id) => {
-            url = "{{ route('accountEdit', ':id') }}"
-            url = url.replace(':id', id)
+            let url = "{{ route('accountEdit', ':id') }}";
+            url = url.replace(':id', id);
             $.get(url)
                 .done((data) => {
-
                     data.forEach((el) => {
-                        $("#account_name").val(el.account_name)
-                        $("#account_number").val(el.account_number)
-                        $("#account_balance").val(el.account_balance)
-                    })
+                        $("#account_name").val(el.account_name);
+                        $("#account_number").val(el.account_number);
+                        $("#account_balance").val(el.account_balance);
+                    });
 
-
-                    updateUrl = "{{ route('accountUpdate', ':id') }}"
-                    updateUrl = updateUrl.replace(':id', id)
-                    $("#accountForm").attr("action", updateUrl)
-                    $('#exampleModal').modal('toggle')
+                    let updateUrl = "{{ route('accountUpdate', ':id') }}";
+                    updateUrl = updateUrl.replace(':id', id);
+                    $("#accountForm").attr("action", updateUrl);
+                    $('#accountModal').modal('toggle');
                 })
-
                 .fail((error) => {
-                    console.error();
-                })
-        }
+                    console.error(error);
+                });
+        };
 
-        $("#exampleModal").on("hidden.bs.modal", function() {
-            $("#account_name").val("")
-            $("#account_number").val("")
-            $("#account_balance").val("")
-            $("#accountForm").attr("action", "{{ route('account') }}")
-        })
-
-
+        $("#accountModal").on("hidden.bs.modal", function() {
+            $("#account_name").val("");
+            $("#account_number").val("");
+            $("#account_balance").val("");
+            $("#accountForm").attr("action", "{{ route('account') }}");
+        });
 
         const deletefn = (id) => {
-
-            url = "{{ route('accountDelete', ':id') }}"
-            url = url.replace(':id', id)
+            let url = "{{ route('accountDelete', ':id') }}";
+            url = url.replace(':id', id);
             swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this imaginary file!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        location.replace(url)
-                    } else {
-                        swal("Your imaginary file is safe!");
-                    }
-                });
-
-        }
-
-
-
-
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this account!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    location.replace(url);
+                } else {
+                    swal("Your account is safe!");
+                }
+            });
+        };
 
         @if (\Session::has('message'))
-
-
-
-            swal("account!", "{{ \session::get('message') }}", "success");
+            swal("Account!", "{{ \Session::get('message') }}", "success");
         @endif
     </script>
 @endsection
