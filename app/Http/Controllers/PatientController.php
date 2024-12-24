@@ -9,7 +9,7 @@ class PatientController extends Controller
 {
     public function index()
     {
-        $patient = patient::all();
+        $patient = Patient::all();
         return view('patient.index',compact('patient'));
     }
 
@@ -37,7 +37,7 @@ class PatientController extends Controller
 
         ]);
 
-        patient::create($validatedData);
+        Patient::create($validatedData);
 
         return redirect('patient')->with('message', 'patient added successfully');
     }
@@ -47,7 +47,7 @@ class PatientController extends Controller
      */
     public function show(string $id)
     {
-        return patient::where('id', $id)->get();
+        return Patient::where('id', $id)->get();
     }
 
     /**
@@ -55,7 +55,7 @@ class PatientController extends Controller
      */
     public function edit(string $id)
     {
-        return patient::where('id', $id)->get();
+        return Patient::where('id', $id)->get();
     }
 
     /**
@@ -63,7 +63,7 @@ class PatientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        patient::find($id)->update([
+        Patient::find($id)->update([
             "name"=>$request->name,
             "phone"=>$request->phone,
             "sex"=>$request->sex,
@@ -82,7 +82,7 @@ class PatientController extends Controller
      */
     public function destroy(string $id)
     {
-        patient::find($id)->delete();
+        Patient::find($id)->delete();
         return redirect('patient')->with('message','data deleted');
     }
 }

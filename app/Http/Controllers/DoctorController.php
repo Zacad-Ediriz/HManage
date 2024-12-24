@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Doctor;
-use App\Models\patient;
-use App\Models\product;
+use App\Models\Patient;
+use App\Models\Product;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -102,18 +102,18 @@ class DoctorController extends Controller
 
     public function dashbourds()
     {
-        $data['Doctors'] = doctor::count();
-        $data['patient'] = patient::count();
+        $data['Doctors'] = Doctor::count();
+        $data['patient'] = Patient::count();
         $data['Appointment'] = Appointment::count();
-        $data['product'] = product::count();
+        $data['product'] = Product::count();
         return view('dashbourd', $data);
     }
     public function userdashboard()
     {
-        $data['Doctors'] = doctor::count();
-        $data['patient'] = patient::count();
+        $data['Doctors'] = Doctor::count();
+        $data['patient'] = Patient::count();
         $data['Appointment'] = Appointment::count();
-        $data['product'] = product::count();
+        $data['product'] = Product::count();
         return view('userdashbourd', $data);
 
     }
@@ -129,7 +129,7 @@ class DoctorController extends Controller
     public function userindex()
     {
         $user = User::all();
-        return view('User', compact('user'));
+        return view('user', compact('user'));
     }
 
 
@@ -157,7 +157,7 @@ class DoctorController extends Controller
         User::create($validatedData);
         DB::commit();
 
-        return redirect('userss')->with('message', 'userss added successfully');
+        return redirect('userss')->with('message', 'users added successfully');
     }
 
     /**

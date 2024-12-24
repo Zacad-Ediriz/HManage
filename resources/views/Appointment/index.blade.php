@@ -27,11 +27,19 @@
                     @foreach($appointments as $appointment)   
                     <tr>
                     
-                    <td>{{ $appointment?->doctor }}</td>
+                    <td>{{ $appointment->mypi->Name }}</td>
 
 <!-- Check if the patient is loaded and if the name exists -->
                     
-                    <td>{{ $appointment?->patient }}</td>
+                    
+                    <td>
+                        @if($appointment->pp)
+                            {{ $appointment->pp->name }}
+                        @else
+                            No Name Available
+                        @endif
+                    </td>
+
                         <td>{{ $appointment->consultant_fee }}</td>
                         <td>{{ $appointment->net_fee }}</td>
                 

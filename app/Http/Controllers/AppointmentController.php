@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
-use App\Models\patient;
+use App\Models\Patient;
 
 use App\Models\Appointment;
-use App\Models\payment_formm;
+use App\Models\Payment_formm;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use App\Models\ScheduleDoctor;
@@ -26,12 +26,12 @@ class AppointmentController extends Controller
     public function index()
 {
     // Load the 'doctor' and 'patient' relationships with the 'Appointment' model
-    $appointments = Appointment::with('mypi', 'patient')->get();
-    
+    $appointments = Appointment::with('mypi','pp')->get();
+   
    
 
     // Pass the appointments to the view
-    return view('Appointment.index', compact('appointments'));
+    return view('appointment.index', compact('appointments'));
 
 }
     
@@ -88,7 +88,7 @@ public function store(Request $request)
         'serial' => 'required|integer',
         'doctor' => 'required|exists:doctor,id',
         'schedule' => 'required',
-        'patient' => 'nullable|exists:patients,id',
+        'patient' => 'required|exists:patients,id',
         'consultant_fee' => 'required|numeric',
         'discount' => 'nullable|numeric',
         'net_fee' => 'required|numeric',
@@ -121,7 +121,7 @@ public function store(Request $request)
         $account->save();
 
         // Record the payment in the payment_formm model
-        payment_formm::create([
+        Payment_formm::create([
             'account_number' => $validated['account_number'],
             'patient' => $validated['patient'],
             'amount' => $validated['net_fee'], // Log the net fee as the payment amount
@@ -152,7 +152,7 @@ public function storePayment(Request $request)
     $account->save();
 
     // Save the payment record in the payment_formm model
-    $payment = payment_formm::create([
+    $payment = Payment_formm::create([
         'patient' => $validated['patient'],
         'amount' => $validated['amount'],
         'account_number' => $validated['account_number'],

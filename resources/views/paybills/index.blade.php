@@ -1,95 +1,88 @@
 @extends('layout.index')
+
 @section('home')
-    <h1>paybills</h1>
+    <h1 class="my-4">Paybills</h1>
 
-
+    <!-- Button to open modal -->
     <div class="row justify-content-end">
         <div class="col-3">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fa fa-plus"></i>
-                Create new
+                <i class="fa fa-plus"></i> Create New
             </button>
         </div>
     </div>
+
+    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create new paybills</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Create New Paybill</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="col-md-12 mx-auto" id="paybills" action="/paybills" method="post">
+                    <form action="{{ route('paybills.store') }}" method="POST">
                         @csrf
 
-
-
-                        <div class=" form-group mb-3">
-                            <label class=" form-label"> Vendor </label>
-                            <select class="form-control inputmodalselect2" name="vendor_id" id="vendor_id">
-                                <option>Choose a vendor</option>
-                                @foreach ($purchase as $row)
-                                    {
-                                    <option value="{{ $row?->id }}">{{ $row?->mypi->name }}</option>
-                                    }
+                        <!-- Vendor Selection -->
+                        <div class="mb-3">
+                            <label for="vendor" class="form-label">Vendor</label>
+                            <select name="vendor" id="vendor" class="form-select" required>
+                                <option value="">Select a vendor</option>
+                                @foreach($vendors as $vendor)
+                                    <option value="{{ $vendor->id }}" data-balance="{{ $vendor->balance }}">{{ $vendor->name }}</option>
                                 @endforeach
                             </select>
-
                         </div>
 
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">amount</label>
-                            <input type="text" name="amount" id="amount" class="form-control" required readonly
-                                id="exampleInput1" aria-describedby="Help">
+                        <!-- Amount -->
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" id="amount" name="amount" class="form-control" value="{{ old('amount') }}" readonly>
                         </div>
 
-                        <div class="form-group mb-3">
-                            <label class="form-label">Amount paid</label>
-                            <input type="text" name="amount_paid" id="amount_paid" class="form-control" required
-                                id="exampleInput1" aria-describedby="Help">
+                        <!-- Amount Paid -->
+                        <div class="mb-3">
+                            <label for="amount_paid" class="form-label">Amount Paid</label>
+                            <input type="number" name="amount_paid" id="amount_paid" class="form-control" oninput="updateBalance()" required>
                         </div>
 
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">balance</label>
-                            <input type="text" name="balance" id="balance" class="form-control" required readonly
-                                id="exampleInput1" aria-describedby="Help">
+                        <!-- Balance -->
+                        <div class="mb-3">
+                            <label for="balance" class="form-label">Balance</label>
+                            <input type="text" name="balance" id="balance" class="form-control" value="0.00" readonly>
                         </div>
 
-
-
-                        <div class=" form-group mb-3">
-                            <label class=" form-label"> paybills Method</label>
-                            <select class="form-control inputmodalselect2" name="payment_method" id="payment_method">
-                                <option>Choose a paybills method</option>
-                                @foreach ($acount as $row)
-                                    {
-                                    <option value="{{ $row?->id }}">{{ $row?->account_name }}</option>
-                                    }
+                        <!-- Paybill Method -->
+                        <div class="mb-3">
+                            <label for="paybills_method" class="form-label">Paybills Method</label>
+                            <select name="paybills_method_id" id="paybills_method" class="form-select" required>
+                                @foreach($accounts as $account)
+                                    <option value="{{ $account->id }}">{{ $account->account_name }}</option>
                                 @endforeach
                             </select>
-
                         </div>
 
-                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <br>
 
-    <br><br>
-    <div class=" ">
-        <table class="table display " id="table">
+    <!-- Table of Paybills -->
+    <div class="table-responsive">
+        <table class="table table-striped" id="table">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Vendor</th>
                     <th>Amount</th>
                     <th>Amount Paid</th>
-                    <th>balance</th>
+                    <th>Balance</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -97,139 +90,43 @@
                 @foreach ($paybills as $row)
                     <tr>
                         <td>{{ $row->id }}</td>
-                        <td>{{ $row->vendor_id }}</td>
-                        <td>${{ $row->amount }}</td>
-                        <td>${{ $row->amount_paid }}</td>
-                        <td>${{ $row->balance }}</td>
-                        <td><a href="#" onclick="updatefn({{ $row['id'] }})" class="btn btn-success"><i
-                                    class="fa fa-edit"></i> </a>
-                            <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-trush"> <i
-                                    class="fa fa-trash"> </i></a>
+                        <td>{{ $vendor->name }}</td>
+
+                        <td>${{ number_format($row->amount, 2) }}</td>
+                        <td>${{ number_format($row->amount_paid, 2) }}</td>
+                        <td>${{ number_format($row->balance, 2) }}</td>
+                        <td>
+                            <a href="#" onclick="updatefn({{ $row['id'] }})" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Edit</a>
+                            <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-
     </div>
 @endsection
 
-
-
-
 @section('scripts')
     <script>
-        $("document").ready(function() {
+        const amountInput = document.getElementById('amount');
+        const amountPaidInput = document.getElementById('amount_paid');
+        const balanceInput = document.getElementById('balance');
+        const vendorSelect = document.getElementById('vendor');
 
-            $("#table").DataTable();
-        })
-
-
-
-
-        $("document").ready(function() {
-            $("#vendor_id").on("change", async function() {
-                let res = await $.post("{{ route('getvendorBalance') }}", {
-                    vendor_id: $(this).val(),
-                    _token: "{{ csrf_token() }}"
-                })
-                $("#amount").val(res.balance);
-            })
-        });
-
-
-
-
-        $(document).ready(function() {
-            $("#amount_paid").on("keyup", async function() {
-                updateBalance();
-            });
-
-            function updateBalance() {
-                let total = parseFloat($("#amount").val()) || 0;
-                let amountPaid = parseFloat($("#amount_paid").val()) || 0;
-                let balance = total - amountPaid;
-                $("#balance").val(balance.toFixed(2)); // Ensure balance is formatted properly
-            }
+        vendorSelect.addEventListener('change', () => {
+            const selectedVendor = vendorSelect.options[vendorSelect.selectedIndex];
+            amountInput.value = selectedVendor.dataset.balance || 0;
             updateBalance();
         });
 
-
-
-
-
-
-
-
-
-
-
-        const updatefn = (id) => {
-            url = "{{ route('paybillsEdit', ':id') }}"
-            url = url.replace(':id', id)
-            $.get(url)
-                .done((data) => {
-
-                    data.forEach((el) => {
-                        $("#name").val(el.name)
-                        $("#purchase_price").val(el.purchase_price)
-                        $("#sale_price").val(el.sale_price)
-                        $("#stock").val(el.stock)
-                    })
-
-
-                    updateUrl = "{{ route('paybillsUpdate', ':id') }}"
-                    updateUrl = updateUrl.replace(':id', id)
-                    $("#paybills").attr("action", updateUrl)
-                    $('#exampleModal').modal('toggle')
-                })
-
-                .fail((error) => {
-                    console.error();
-                })
+        function updateBalance() {
+            const amount = parseFloat(amountInput.value || 0);
+            const amountPaid = parseFloat(amountPaidInput.value || 0);
+            balanceInput.value = (amount - amountPaid).toFixed(2);
         }
-
-        $("#exampleModal").on("hidden.bs.modal", function() {
-            $("#name").val("")
-            $("#purchase_price").val("")
-            $("#sale_price").val("")
-            $("#stock").val("")
-
-            $("#paybills").attr("action", "{{ route('paybills') }}")
-        })
-
-
-
-        const deletefn = (id) => {
-
-            url = "{{ route('paybillsDelete', ':id') }}"
-            url = url.replace(':id', id)
-            swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this imaginary file!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        location.replace(url)
-                    } else {
-                        swal("Your imaginary file is safe!");
-                    }
-                });
-
-        }
-
-
-
-
 
         @if (\Session::has('message'))
-
-
-
-            swal("paybills!", "{{ \session::get('message') }}", "success");
+            swal("Paybills!", "{{ \session::get('message') }}", "success");
         @endif
     </script>
 @endsection

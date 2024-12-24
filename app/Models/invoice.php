@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Models\Account;
-use App\Models\patient;
+use App\Models\Patient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class invoice extends Model
+class Invoice extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -24,7 +24,7 @@ class invoice extends Model
     ];
     public function mypi()
     {
-        return $this->belongsTo(patient::class, 'patient');
+        return $this->belongsTo(Patient::class, 'patient');
     }
     public function myacount()
     {

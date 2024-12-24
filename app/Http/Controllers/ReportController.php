@@ -1,8 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\invoice;
+use App\Models\Invoice;
 use App\Models\Expenses;
+use App\Models\Pay_bills;
+use App\Models\SalaryList;
+use App\Models\Payment_formm;
+use App\Models\Payment_form;
 use App\Models\Purchase;
 use App\Models\Appointment;
 
@@ -18,17 +22,26 @@ class ReportController extends Controller
     $toDate = $request->input('to_date', now()->toDateString());
 
     // Calculate Revenues
-    $salesRevenues = invoice::whereBetween('created_at', [$fromDate, $toDate])->sum('total');
+    $z = Invoice::whereBetween('created_at', [$fromDate, $toDate])->sum('amount_paid');
     $getableDues  = Appointment::whereBetween('created_at', [$fromDate, $toDate])->sum('net_fee');
+    $zz = Payment_form::whereBetween('created_at', [$fromDate, $toDate])->sum('amount_paid');
+    
+    $salesRevenues= $z +  $zz;
     
     
-    $totalRevenues = $salesRevenues + $getableDues;
+    
+    $totalRevenues = $salesRevenues + $getableDues ;
 
     // Calculate Expenses
-    $manufacturerPayments = Expenses::whereBetween('created_at', [$fromDate, $toDate])->sum('amount');
-    $otherExpenses = invoice::whereBetween('created_at', [$fromDate, $toDate])->sum('discount');
+    $CostOfGoodSold2=Pay_bills::whereBetween('created_at', [$fromDate, $toDate])->sum('amount_paid');
+    $CostOfGoodSold1=Purchase::whereBetween('created_at', [$fromDate, $toDate])->sum('amount_paid');
     
-    $totalExpenses = $manufacturerPayments + $otherExpenses;
+    $EmployeeSalary = SalaryList::whereBetween('created_at', [$fromDate, $toDate])->sum('net_salary');
+    $manufacturerPayments = Expenses::whereBetween('created_at', [$fromDate, $toDate])->sum('amount');
+    
+    $CostOfGoodSold = $CostOfGoodSold2 + $CostOfGoodSold1;
+    
+    $totalExpenses = $manufacturerPayments + $CostOfGoodSold + $EmployeeSalary;
 
     // Calculate Balance
     $balance = $totalRevenues - $totalExpenses;
@@ -40,9 +53,9 @@ class ReportController extends Controller
         'getableDues',
         'totalRevenues',
         'manufacturerPayments',
-        'otherExpenses',
+        
         'totalExpenses',
-        'balance'
+        'balance' ,'CostOfGoodSold', 'EmployeeSalary'
     ));
 }
 

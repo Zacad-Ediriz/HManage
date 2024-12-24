@@ -175,7 +175,7 @@
                 @foreach ($purchase as $row)
                     <tr>
                         <td>{{ $row->id }}</td>
-                        <td>{{ $row->vendor }}</td>
+                        <td>{{ $row->name }}</td>
                         <td>{{ $row->total }}</td>
                         <td>{{ $row->discount }}</td>
                         <td>{{ $row->net_total }}</td>

@@ -8,17 +8,17 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\patientController;
-use App\Http\Controllers\productController;
-use App\Http\Controllers\serviceController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ExpensesController;
 use App\Http\Controllers\PayBillsController;
-use App\Http\Controllers\purchaseController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\EmplooyeeController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PaymentFormController;
 use App\Http\Controllers\DoctorScheduleController;
-use App\Http\Controllers\expensescategoryController;
+use App\Http\Controllers\ExpensescategoryController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScheduleDoctorController;
@@ -115,11 +115,11 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     });
 
     // Routes for service
-    Route::get('/service', [serviceController::class, "index"])->name("service");
-    Route::post('/service', [serviceController::class, "store"])->name("serviceStore");
-    Route::get('/service/{id}', [serviceController::class, "edit"])->name("serviceEdit");
-    Route::post('/service/update/{id}', [serviceController::class, "update"])->name("serviceUpdate");
-    Route::get('/service/delete/{id}', [serviceController::class, "destroy"])->name("serviceDelete");
+    Route::get('/service', [ServiceController::class, "index"])->name("service");
+    Route::post('/service', [ServiceController::class, "store"])->name("serviceStore");
+    Route::get('/service/{id}', [ServiceController::class, "edit"])->name("serviceEdit");
+    Route::post('/service/update/{id}', [ServiceController::class, "update"])->name("serviceUpdate");
+    Route::get('/service/delete/{id}', [ServiceController::class, "destroy"])->name("serviceDelete");
 
 
 
@@ -134,43 +134,49 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
 
 
     // Routes for service
-    Route::get('/patient', [patientController::class, "index"])->name("patient");
-    Route::post('/patient', [patientController::class, "store"])->name("patientStore");
-    Route::get('/patient/{id}', [patientController::class, "edit"])->name("patientEdit");
-    Route::post('/patient/update/{id}', [patientController::class, "update"])->name("patientUpdate");
-    Route::get('/patient/delete/{id}', [patientController::class, "destroy"])->name("patientDelete");
+    Route::get('/patient', [PatientController::class, "index"])->name("patient");
+    Route::post('/patient', [PatientController::class, "store"])->name("patientStore");
+    Route::get('/patient/{id}', [PatientController::class, "edit"])->name("patientEdit");
+    Route::post('/patient/update/{id}', [PatientController::class, "update"])->name("patientUpdate");
+    Route::get('/patient/delete/{id}', [PatientController::class, "destroy"])->name("patientDelete");
 
 
 
-    Route::get('/vendor', [vendorController::class, "index"])->name("vendor");
-    Route::post('/vendor', [vendorController::class, "store"])->name("vendorStore");
-    Route::get('/vendor/{id}', [vendorController::class, "edit"])->name("vendorEdit");
-    Route::post('/vendor/update/{id}', [vendorController::class, "update"])->name("vendorUpdate");
-    Route::get('/vendor/delete/{id}', [vendorController::class, "destroy"])->name("vendorDelete");
+    Route::get('/vendor', [VendorController::class, "index"])->name("vendor");
+    Route::post('/vendor', [VendorController::class, "store"])->name("vendorStore");
+    Route::get('/vendor/{id}', [VendorController::class, "edit"])->name("vendorEdit");
+    Route::post('/vendor/update/{id}', [VendorController::class, "update"])->name("vendorUpdate");
+    Route::get('/vendor/delete/{id}', [VendorController::class, "destroy"])->name("vendorDelete");
 
     // Routes for service
-    Route::get('/invoice', [invoiceController::class, "index"])->name("invoice");
-    Route::post('/invoice', [invoiceController::class, "store"])->name("invoiceStore");
-    Route::get('/invoice/{id}', [invoiceController::class, "edit"])->name("invoiceEdit");
-    Route::post('/invoice/update/{id}', [invoiceController::class, "update"])->name("invoiceUpdate");
-    Route::get('/invoice/delete/{id}', [invoiceController::class, "destroy"])->name("invoiceDelete");
-    Route::post('/getItem', [invoiceController::class, "getInvoiceItem"])->name("getInvoiceItem");
-    Route::post('/getpateintBalance', [invoiceController::class, "getpateintBalance"])->name("getpateintBalance");
-    Route::post('/getitemprice', [invoiceController::class, "getitemprice"])->name("getitemprice");
-    Route::post('/getSerivicePrice', [invoiceController::class, "getSerivicePrice"])->name("getSerivicePrice");
+    Route::get('/invoice', [InvoiceController::class, "index"])->name("invoice");
+    Route::post('/invoice', [InvoiceController::class, "store"])->name("invoiceStore");
+    Route::get('/invoice/{id}', [InvoiceController::class, "edit"])->name("invoiceEdit");
+    Route::post('/invoice/update/{id}', [InvoiceController::class, "update"])->name("invoiceUpdate");
+    Route::get('/invoice/delete/{id}', [InvoiceController::class, "destroy"])->name("invoiceDelete");
+    Route::post('/getItem', [InvoiceController::class, "getInvoiceItem"])->name("getInvoiceItem");
+    Route::post('/getpateintBalance', [InvoiceController::class, "getpateintBalance"])->name("getpateintBalance");
+    Route::post('/getitemprice', [InvoiceController::class, "getitemprice"])->name("getitemprice");
+    Route::post('/getSerivicePrice', [InvoiceController::class, "getSerivicePrice"])->name("getSerivicePrice");
     
 
 
-    Route::get('/purchase', [purchaseController::class, "index"])->name("purchase");
-    Route::post('/purchase', [purchaseController::class, "store"])->name("purchaseStore");
-    Route::get('/purchase/{id}', [purchaseController::class, "edit"])->name("purchaseEdit");
-    Route::post('/purchase/update/{id}', [purchaseController::class, "update"])->name("purchaseUpdate");
-    Route::get('/purchase/delete/{id}', [purchaseController::class, "destroy"])->name("purchaseDelete");
-    Route::post('/getItems', [purchaseController::class, "getpurchaseItem"])->name("getpurchaseItem");
-    Route::post('/getvendorsBalance', [purchaseController::class, "getvendorsBalance"])->name("getvendorsBalance");
+    Route::get('/purchase', [PurchaseController::class, "index"])->name("purchase");
+    Route::post('/purchase', [PurchaseController::class, "store"])->name("purchaseStore");
+    Route::get('/purchase/{id}', [PurchaseController::class, "edit"])->name("purchaseEdit");
+    Route::post('/purchase/update/{id}', [PurchaseController::class, "update"])->name("purchaseUpdate");
+    Route::get('/purchase/delete/{id}', [PurchaseController::class, "destroy"])->name("purchaseDelete");
+    Route::post('/getItems', [PurchaseController::class, "getpurchaseItem"])->name("getpurchaseItem");
+    Route::post('/getvendorsBalance', [PurchaseController::class, "getvendorsBalance"])->name("getvendorsBalance");
 
-    Route::get('/paymentform', [PaymentFormController::class, "index"])->name("paymentform");
-    Route::post('/paymentform', [PaymentFormController::class, "store"])->name("paymentformStore");
+
+
+    Route::get('/paymentform', [PaymentFormController::class, 'index'])->name('paymentform.index');
+
+// Route to handle the form submission (POST request)
+    Route::post('/paymentform', [PaymentFormController::class, 'store'])->name('paymentform.store');
+    // Route::get('/paymentform', [PaymentFormController::class, "index"])->name("paymentform");
+    // Route::post('/paymentform', [PaymentFormController::class, "store"])->name("paymentformStore");
     Route::get('/paymentform/{id}', [PaymentFormController::class, "edit"])->name("paymentformEdit");
     Route::post('/paymentform/update/{id}', [PaymentFormController::class, "update"])->name("paymentformUpdate");
     Route::get('/paymentform/delete/{id}', [PaymentFormController::class, "destroy"])->name("paymentformDelete");
@@ -192,15 +198,21 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     Route::get('/api/appointment/{id}', [AppointmentController::class, 'getAppointmentDetails']);
 
     
-    Route::get('/paybills', [PayBillsController::class, "index"])->name("paybills");
-    Route::Post('/paybills', [PayBillsController::class, "store"])->name("paybillsStore");
+    // Route::get('/paybills', [PayBillsController::class, "index"])->name("paybills");
+    // Route::Post('/paybills', [PayBillsController::class, "store"])->name("paybillsStore");
     Route::get('/paybills/{id}', [PayBillsController::class, "edit"])->name("paybillsEdit");
     Route::post('/paybills/update/{id}', [PayBillsController::class, "update"])->name("paybillsUpdate");
     Route::get('/paybills/delete/{id}', [PayBillsController::class, "destroy"])->name("paybillsDelete");
     Route::post('/getvendorBalance', [PayBillsController::class, "getvendorBalance"])->name("getvendorBalance");
     
-    
+    // Route::get('/paybills/create', [PayBillsController::class, 'create'])->name('paybills.create');
+    // Route::post('/paybills', [PayBillsController::class, 'store'])->name('paybills.store');
     //Hrm
+    // Route to display the form (GET request)
+    Route::get('/paybills', [PayBillsController::class, 'index'])->name('paybills.index');
+
+// Route to handle the form submission (POST request)
+    Route::post('/paybills', [PayBillsController::class, 'store'])->name('paybills.store');
     
 
     Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
@@ -280,11 +292,11 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     
 
 
-    Route::get('/product', [productController::class, "index"])->name("product");
-    Route::post('/product', [productController::class, "store"])->name("productStore");
-    Route::get('/product/{id}', [productController::class, "edit"])->name("productEdit");
-    Route::post('/product/update/{id}', [productController::class, "update"])->name("productUpdate");
-    Route::get('/product/delete/{id}', [productController::class, "destroy"])->name("productDelete");
+    Route::get('/product', [ProductController::class, "index"])->name("product");
+    Route::post('/product', [ProductController::class, "store"])->name("productStore");
+    Route::get('/product/{id}', [ProductController::class, "edit"])->name("productEdit");
+    Route::post('/product/update/{id}', [ProductController::class, "update"])->name("productUpdate");
+    Route::get('/product/delete/{id}', [ProductController::class, "destroy"])->name("productDelete");
 
 
     Route::get('/expenses', [ExpensesController::class, "index"])->name("expenses");
@@ -294,11 +306,11 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     Route::get('/expenses/delete/{id}', [ExpensesController::class, "destroy"])->name("expensesDelete");
 
 
-    Route::get('/expensescategory', [expensescategoryController::class, "index"])->name("expensescategory");
-    Route::post('/expensescategory', [expensescategoryController::class, "store"])->name("expensescategoryStore");
-    Route::get('/expensescategory/{id}', [expensescategoryController::class, "edit"])->name("expensescategoryEdit");
-    Route::post('/expensescategory/update/{id}', [expensescategoryController::class, "update"])->name("expensescategoryUpdate");
-    Route::get('/expensescategory/delete/{id}', [expensescategoryController::class, "destroy"])->name("expensescategoryDelete");
+    Route::get('/expensescategory', [ExpensescategoryController::class, "index"])->name("expensescategory");
+    Route::post('/expensescategory', [ExpensescategoryController::class, "store"])->name("expensescategoryStore");
+    Route::get('/expensescategory/{id}', [ExpensescategoryController::class, "edit"])->name("expensescategoryEdit");
+    Route::post('/expensescategory/update/{id}', [ExpensescategoryController::class, "update"])->name("expensescategoryUpdate");
+    Route::get('/expensescategory/delete/{id}', [ExpensescategoryController::class, "destroy"])->name("expensescategoryDelete");
 });
 include ('usermanagement.php');
 

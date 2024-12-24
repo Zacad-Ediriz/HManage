@@ -44,7 +44,7 @@
                         <td class="text-end">${{ number_format($salesRevenues, 2) }}</td>
                     </tr>
                     <tr>
-                        <td>Getable Dues</td>
+                        <td>Other Income</td>
                         <td></td>
                         <td class="text-end">${{ number_format($getableDues, 2) }}</td>
                     </tr>
@@ -61,15 +61,21 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td>Cost Of Sold</td>
+                        <td></td>
+                        <td class="text-end">${{ number_format($CostOfGoodSold, 2) }}</td>
+                    </tr>
+                    <tr>
                         <td>Manufacturer Payment (Cash)</td>
                         <td></td>
                         <td class="text-end">${{ number_format($manufacturerPayments, 2) }}</td>
                     </tr>
                     <tr>
-                        <td>Others</td>
+                        <td>Employee Salary</td>
                         <td></td>
-                        <td class="text-end">${{ number_format($otherExpenses, 2) }}</td>
+                        <td class="text-end">${{ number_format($EmployeeSalary, 2) }}</td>
                     </tr>
+                    
                     <tr>
                         <th colspan="2" class="text-end">Total Expenses</th>
                         <th class="text-end">${{ number_format($totalExpenses, 2) }}</th>

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\patient;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class PatientBalanceReportController extends Controller
@@ -13,7 +13,7 @@ class PatientBalanceReportController extends Controller
     public function index()
     {
         // Fetch all patients with their balances
-        $patients = patient::select('id', 'name', 'balance')->get();
+        $patients = Patient::select('id', 'name', 'balance')->get();
 
         // Calculate the total balance for display (optional)
         $totalBalance = $patients->sum('balance');

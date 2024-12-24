@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invoice;
-use App\Models\patient;
+use App\Models\Patient;
 class SalesReportController extends Controller
 {
     // public function index(Request $request)

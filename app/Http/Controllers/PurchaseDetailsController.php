@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\purchase_details;
+use App\Models\Purchase_details;
 use Illuminate\Http\Request;
 
 class PurchaseDetailsController extends Controller

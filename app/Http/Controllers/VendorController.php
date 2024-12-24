@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\vendor;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 
 class VendorController extends Controller
 {
     public function index()
     {
-        $vendor = vendor::all();
+        $vendor = Vendor::all();
         return view('vendor.index',compact('vendor'));
     }
 
@@ -37,7 +37,7 @@ class VendorController extends Controller
 
         ]);
 
-        vendor::create($validatedData);
+        Vendor::create($validatedData);
 
         return redirect('vendor')->with('message', 'vendor added successfully');
     }
@@ -47,7 +47,7 @@ class VendorController extends Controller
      */
     public function show(string $id)
     {
-        return vendor::where('id', $id)->get();
+        return Vendor::where('id', $id)->get();
     }
 
     /**
@@ -55,7 +55,7 @@ class VendorController extends Controller
      */
     public function edit(string $id)
     {
-        return vendor::where('id', $id)->get();
+        return Vendor::where('id', $id)->get();
     }
 
     /**
@@ -63,7 +63,7 @@ class VendorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        vendor::find($id)->update([
+        Vendor::find($id)->update([
             "name"=>$request->name,
             "phone"=>$request->phone,
             "sex"=>$request->sex,
@@ -82,7 +82,7 @@ class VendorController extends Controller
      */
     public function destroy(string $id)
     {
-        vendor::find($id)->delete();
+        Vendor::find($id)->delete();
         return redirect('vendor')->with('message','data deleted');
     }
 }

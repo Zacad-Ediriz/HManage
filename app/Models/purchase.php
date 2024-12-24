@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\vendor;
+use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class purchase extends Model
+class Purchase extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -22,6 +22,6 @@ class purchase extends Model
     ];
     public function mypi()
     {
-        return $this->belongsTo(vendor::class, 'vendor');
+        return $this->belongsTo(Vendor::class, 'vendor');
     }
 }

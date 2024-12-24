@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\service;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
     public function index()
     {
-        $service = service::all();
+        $service = Service::all();
         return view('service.index',compact('service'));
     }
 
@@ -27,7 +27,7 @@ class ServiceController extends Controller
             'price' => 'required',
         ]);
 
-        service::create($validatedData);
+        Service::create($validatedData);
 
         return redirect('service')->with('message', 'service added successfully');
     }
@@ -37,7 +37,7 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        return service::where('id', $id)->get();
+        return Service::where('id', $id)->get();
     }
 
     /**
@@ -45,7 +45,7 @@ class ServiceController extends Controller
      */
     public function edit(string $id)
     {
-        return service::where('id', $id)->get();
+        return Service::where('id', $id)->get();
     }
 
     /**
@@ -53,7 +53,7 @@ class ServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        service::find($id)->update([
+        Service::find($id)->update([
             "name"=>$request->name,
             "price"=>$request->price,
             "description"=>$request->description,
@@ -66,7 +66,7 @@ class ServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        service::find($id)->delete();
+        Service::find($id)->delete();
         return redirect('service')->with('message','data deleted');
     }
 }

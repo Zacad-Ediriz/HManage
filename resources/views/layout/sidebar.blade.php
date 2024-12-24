@@ -158,7 +158,7 @@
                 </div>
                 <div class="menu-sub menu-sub-accordion menu-active-bg">
                     <div class="menu-item">
-                        <a class="menu-link active" href="{{ route('paymentform') }}">
+                        <a class="menu-link active" href="{{ route('paymentform.index') }}">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                                 <span class="svg-icon svg-icon-2">
@@ -347,7 +347,7 @@
 
                 <div class="menu-sub menu-sub-accordion menu-active-bg">
                     <div class="menu-item">
-                        <a class="menu-link active" href="{{ route('paybills') }}">
+                        <a class="menu-link active" href="{{ route('paybills.index') }}">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
                                 <span class="svg-icon svg-icon-2">

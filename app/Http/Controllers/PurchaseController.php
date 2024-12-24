@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\purchase;
-use App\Models\purchase_details;
-use App\Models\vendor;
+use App\Models\Purchase;
+use App\Models\Purchase_details;
+use App\Models\Vendor;
 use App\Models\Account;
-use App\Models\service;
-use App\Models\product;
+use App\Models\Service;
+use App\Models\Product;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +16,10 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchase = purchase::all();
-        $data['vendor'] = vendor::get();
+        $purchase = Purchase::with('mypi')->get();
+        $data['vendor'] = Vendor::get();
         $data['acount'] = Account::get();
-        $data['product'] = product::get();
+        $data['product'] = Product::get();
         return view('purchase.index', compact('purchase'), $data);
     }
 
@@ -67,19 +67,19 @@ class PurchaseController extends Controller
         }
         $validatedData["payment_status"] = $payment_status;
 
-        $myinvoice = purchase::create($validatedData);
+        $myinvoice = Purchase::create($validatedData);
 
 
 
         for ($i = 0; $i < count($request->item); $i++) {
-            purchase_details::create([
+            Purchase_details::create([
                 'purchase_id' => $myinvoice->id,
                 'type' => "product",
                 'product' => $request->item[$i],
                 'qty' => $request->qty[$i],
                 'price' => $request->price[$i],
             ]);
-            $product = product::where('id', $request->item[$i])->first();
+            $product = Product::where('id', $request->item[$i])->first();
             $qtyproduct = $product->stock + $request->qty[$i];
             $product->update([
                 "stock" => $qtyproduct,
@@ -103,7 +103,7 @@ class PurchaseController extends Controller
 
 
 
-        $vendor = vendor::where('id', $request->vendor)->first();
+        $vendor = Vendor::where('id', $request->vendor)->first();
         $vendor->update([
             "balance" => $request->balance,
         ]);
@@ -119,7 +119,7 @@ class PurchaseController extends Controller
      */
     public function show(string $id)
     {
-        return purchase::where('id', $id)->get();
+        return Purchase::where('id', $id)->get();
     }
 
     /**
@@ -127,7 +127,7 @@ class PurchaseController extends Controller
      */
     public function edit(string $id)
     {
-        return purchase::where('id', $id)->get();
+        return Purchase::where('id', $id)->get();
     }
 
     /**
@@ -135,7 +135,7 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        purchase::find($id)->update([
+        Purchase::find($id)->update([
             "name" => $request->name,
             "phone" => $request->phone,
             "sex" => $request->sex,
@@ -154,7 +154,7 @@ class PurchaseController extends Controller
      */
     public function destroy(string $id)
     {
-        purchase::find($id)->delete();
+        Purchase::find($id)->delete();
         return redirect('purchase')->with('message', 'data deleted');
     }
 
@@ -162,7 +162,7 @@ class PurchaseController extends Controller
     {
         $type = $request->input('type');
         if ($type === 'product') {
-            $items = product::all();
+            $items = Product::all();
         } else {
             $items = [];
         }
@@ -171,7 +171,7 @@ class PurchaseController extends Controller
     }
     public function getvendorsBalance(Request $request)
     {
-        $amount = vendor::where('id', $request->vendor)->first();
+        $amount = Vendor::where('id', $request->vendor)->first();
         return response()->json($amount);
     }
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\vendor;
+use App\Models\Vendor;
 
 class VendorBalanceReportController extends Controller
 {
@@ -14,7 +14,7 @@ class VendorBalanceReportController extends Controller
     public function index()
     {
         // Fetch all patients with their balances
-        $patients = vendor::select('id', 'name', 'balance')->get();
+        $patients = Vendor::select('id', 'name', 'balance')->get();
 
         // Calculate the total balance for display (optional)
         $totalBalance = $patients->sum('balance');

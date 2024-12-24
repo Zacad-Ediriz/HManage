@@ -1,7 +1,7 @@
 @extends('layout.index')
 @section('home')
 
-    <h1>Doctors</h1>
+    <h1>Users</h1>
 
     <!-- Button trigger modal -->
     <div class="row justify-content-end">
@@ -17,7 +17,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="doctorModalLabel">Create new Doctor</h5>
+                    <h5 class="modal-title" id="doctorModalLabel">Create new user</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -160,7 +160,7 @@
 
 
 
-            swal("Doctor!", "{{ \session::get('message') }}", "success");
+            swal("User!", "{{ \session::get('message') }}", "success");
         @endif
     </script>
 @endsection

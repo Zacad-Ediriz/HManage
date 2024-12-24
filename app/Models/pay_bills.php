@@ -1,20 +1,23 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pay_bills extends Model
+class Pay_bills extends Model
 {
     use HasFactory;
     protected $table = 'pay_bills';
-    protected $fillable = [
-        'purchase',
-        'vendor_id',
-        'balance',
+    protected $fillable = [ 
+        'vendor',
         'amount',
         'amount_paid',
-        'payment_method'
+        'balance',
+        'paybills_method_id',
     ];
+    public function mypi()
+    {
+        return $this->belongsTo(Vendor::class, 'vendor');
+    }
 }

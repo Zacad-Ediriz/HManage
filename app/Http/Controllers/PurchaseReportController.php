@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\purchase;
-use App\Models\vendor;
+use App\Models\Purchase;
+use App\Models\Vendor;
 
 class PurchaseReportController extends Controller
 {
@@ -15,7 +15,7 @@ class PurchaseReportController extends Controller
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
         $customer = $request->input('vendor', null);
 
-        $query = purchase::query();
+        $query = Purchase::query();
         
         if ($startDate && $endDate) {
             $query->whereBetween('created_at', [$startDate, $endDate]);

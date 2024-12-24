@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\invoice;
-use App\Models\invoice_detail;
-use App\Models\patient;
+use App\Models\Invoice;
+use App\Models\Invoice_detail;
+use App\Models\Patient;
 use App\Models\Account;
-use App\Models\service;
-use App\Models\product;
+use App\Models\Service;
+use App\Models\Product;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +16,8 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $invoice = invoice::with('mypi', 'myacount')->get();
-        $data['patient'] = patient::get();   
+        $invoice = Invoice::with('mypi', 'myacount')->get();
+        $data['patient'] = Patient::get();   
         $data['acount'] = Account::get();
         return view('invoice.index', compact('invoice'), $data);
     }
@@ -68,17 +68,17 @@ class InvoiceController extends Controller
         $validatedData["payment_status"] =  $payment_status;
 
         $validatedData["appointment_status"] = "0";
-        $myinvoice = invoice::create($validatedData);
+        $myinvoice = Invoice::create($validatedData);
 
         for ($i = 0; $i < count($request->type); $i++) {
-            invoice_detail::create([
+            Invoice_detail::create([
                 'invoice_id' => $myinvoice->id,
                 'type' => $request->type[$i],
                 'product' => $request->item[$i],
                 'qty' => $request->qty[$i],
                 'price' => $request->price[$i],
             ]);
-            $product = product::where('id', $request->item[$i])->first();
+            $product = Product::where('id', $request->item[$i])->first();
             $qtyproduct = $product->stock - $request->qty[$i];
             $product->update([
                 "stock" => $qtyproduct,
@@ -110,7 +110,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        return invoice::where('id', $id)->get();
+        return Invoice::where('id', $id)->get();
     }
 
     /**
@@ -118,7 +118,7 @@ class InvoiceController extends Controller
      */
     public function edit(string $id)
     {
-        return invoice::where('id', $id)->get();
+        return Invoice::where('id', $id)->get();
     }
 
     /**
@@ -126,7 +126,7 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        invoice::find($id)->update([
+        Invoice::find($id)->update([
             "name" => $request->name,
             "phone" => $request->phone,
             "sex" => $request->sex,
@@ -145,8 +145,8 @@ class InvoiceController extends Controller
      */
     public function destroy(string $id)
     {
-        invoice::find($id)->delete();
-        invoice_detail::where('invoice_id', $id)->delete();
+        Invoice::find($id)->delete();
+        Invoice_detail::where('invoice_id', $id)->delete();
         return redirect('invoice')->with('message', 'data deleted');
     }
 
@@ -165,18 +165,18 @@ class InvoiceController extends Controller
     }
     public function getpateintBalance(Request $request)
     {
-        $amount = patient::where('id', $request->patient)->first();
+        $amount = Patient::where('id', $request->patient)->first();
         return response()->json($amount);
     }
 
     public function getitemprice(Request $request)
     {
-        $amount = product::where('id', $request->item)->first();
+        $amount = Product::where('id', $request->item)->first();
         return response()->json($amount);
     }
     public function getSerivicePrice(Request $request)
     {
-        $amount = service::where('id', $request->item)->first();
+        $amount = Service::where('id', $request->item)->first();
         return response()->json($amount);
     }
 

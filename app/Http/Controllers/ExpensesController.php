@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use Illuminate\Http\Request;
-use App\Models\expensescategory;
+use App\Models\Expensescategory;
 use Illuminate\Support\Facades\DB;
 use App\Models\Expenses; // Import the Expenses model
 //use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class ExpensesController extends Controller
         // Retrieve all expenses with related account information
         $expenses = Expenses::with('account')->get();
         $data['account'] = Account::get();
-        $data['category'] = expensescategory::get();
+        $data['category'] = Expensescategory::get();
 
         // Return the view with the expenses data
         return view('expenses.index', compact('expenses'), $data);
@@ -41,35 +41,43 @@ class ExpensesController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request data
         DB::beginTransaction();
-        $validatedData = $request->validate([
-            'category' => 'required',
-            'name' => 'required',
-            'description' => 'required',
-            'amount' => 'required',
-            'account' => 'required',
-
-        ]);
-
-        $account = Account::where('id', $validatedData['account'])->first();
-
-        $netbalance = $account->account_balance - $request->amount;
-
-        $account->update(['inputbalance' => $netbalance]);
-
-        // Create a new Expenses instance and save it
-        Expenses::create([
-            'category' => $validatedData['category'],
-            'name' => $validatedData['name'],
-            'description' => $validatedData['description'],
-            'amount' => $validatedData['amount'],
-            'account' => $validatedData['account'],
-        ]);
-        DB::commit();
-        // Redirect back with a success message
-        return redirect()->back()->with('message', 'Expense added successfully');
+    
+        try {
+            // Validate the request data
+            $validatedData = $request->validate([
+                'category' => 'required',
+                'name' => 'required',
+                'description' => 'required',
+                'amount' => 'required|numeric',
+                'account' => 'required|exists:account,id',
+            ]);
+    
+            $account = Account::findOrFail($validatedData['account']);
+    
+            $netbalance = $account->account_balance - $validatedData['amount'];
+    
+            // Update the account balance
+            $account->update(['account_balance' => $netbalance]);
+    
+            // Create a new Expense
+            Expenses::create([
+                'category' => $validatedData['category'],
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'],
+                'amount' => $validatedData['amount'],
+                'account' => $validatedData['account'],
+            ]);
+    
+            DB::commit();
+    
+            return redirect()->back()->with('message', 'Expense added successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+        }
     }
+    
 
 
     /**

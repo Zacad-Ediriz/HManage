@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Doctor;
+use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,12 +28,12 @@ class Appointment extends Model
     
     public function mypi()
     {
-        return $this->belongsTo(Doctor::class, 'Name'); // Ensure 'doctor_id' matches your database column
+        return $this->belongsTo(Doctor::class, 'doctor'); // Ensure 'doctor_id' matches your database column
     }
 
     // Relationship with Patient
-    public function patient()
+    public function pp()
     {
-        return $this->belongsTo(Patient::class, 'patient', 'id');
+        return $this->belongsTo(Patient::class, 'patient');
     }
 }

@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\expensescategory;
+use App\Models\Expensescategory;
 
-class expensescategoryController extends Controller
+class ExpensescategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $expensescategory = expensescategory::get();
+        $expensescategory = Expensescategory::get();
         return view('expensescategory.index', compact('expensescategory'));
     }
 
@@ -34,7 +34,7 @@ class expensescategoryController extends Controller
             'description' => 'required',
         ]);
 
-        expensescategory::create($validatedData);
+        Expensescategory::create($validatedData);
 
         return redirect('expensescategory')->with('message', 'expenses category added successfully');
     }
@@ -44,7 +44,7 @@ class expensescategoryController extends Controller
      */
     public function show(string $id)
     {
-        return expensescategory::where('id', $id)->get();
+        return Expensescategory::where('id', $id)->get();
 
     }
 
@@ -53,7 +53,7 @@ class expensescategoryController extends Controller
      */
     public function edit(string $id)
     {
-        return expensescategory::where('id', $id)->get();
+        return Expensescategory::where('id', $id)->get();
 
     }
 
@@ -62,7 +62,7 @@ class expensescategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        expensescategory::find($id)->update([
+        Expensescategory::find($id)->update([
             "name" => $request->name,
             "description" => $request->description,
 
@@ -76,7 +76,7 @@ class expensescategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        expensescategory::find($id)->delete();
+        Expensescategory::find($id)->delete();
         return redirect('expensescategory')->with('message', 'data deleted');
     }
 }

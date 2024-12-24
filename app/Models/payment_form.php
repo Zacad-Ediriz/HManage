@@ -6,17 +6,16 @@ use App\Models\patient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class payment_form extends Model
+class Payment_form extends Model
 {
     use HasFactory;
     protected $fillable = [
         'patient',
-        'balance',
-        'amount_paid',
-        'invoice',
         'amount',
-        'payment_method',
-        'appointment_status'
+        'amount_paid',
+        'balance',
+        'paybills_method_id',
+       
     ];
     public function mypatient()
     {

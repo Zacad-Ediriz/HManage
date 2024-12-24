@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\Employee;
+use App\Models\Emplooyee;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
