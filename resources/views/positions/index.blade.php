@@ -5,7 +5,7 @@
     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#positionModal">Add Position</button>
 
     <!-- Table -->
-    <table class="table">
+    <table class="table"  id="table">
         <thead>
             <tr>
                 <th>#</th>
@@ -66,6 +66,10 @@
 @section('scripts')
 
 <script>
+
+$(document).ready(function() {
+            $("#table").DataTable();
+        });
 document.querySelectorAll('.edit-btn').forEach(button => {
     button.addEventListener('click', function() {
         const id = this.dataset.id;

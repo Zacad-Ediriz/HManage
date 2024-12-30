@@ -108,6 +108,9 @@
 
 @section('scripts')
     <script>
+      $(document).ready(function() {
+            $("#table").DataTable();
+        });
         const amountInput = document.getElementById('amount');
         const amountPaidInput = document.getElementById('amount_paid');
         const balanceInput = document.getElementById('balance');

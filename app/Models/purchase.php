@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Account;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,5 +24,9 @@ class Purchase extends Model
     public function mypi()
     {
         return $this->belongsTo(Vendor::class, 'vendor');
+    }
+    public function mypii()
+    {
+        return $this->belongsTo(Account::class, 'payment_method');
     }
 }

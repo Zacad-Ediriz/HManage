@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered">
+    <table class="table table-bordered"  id="table">
         <thead>
             <tr>
                 <th>SL</th>
@@ -67,6 +67,10 @@
 @endsection
 @section('scripts')
 <script>
+
+$(document).ready(function() {
+            $("#table").DataTable();
+        });
     function editDepartment(id) {
         // Add AJAX request for editing a department
     }

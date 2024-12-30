@@ -196,7 +196,7 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     
     Route::get('/api/appointments', [AppointmentController::class, 'getAppointments']);
     Route::get('/api/appointment/{id}', [AppointmentController::class, 'getAppointmentDetails']);
-
+    Route::get('/Appointment/{id}', [AppointmentController::class, 'show'])->name('appointment.show');
     
     // Route::get('/paybills', [PayBillsController::class, "index"])->name("paybills");
     // Route::Post('/paybills', [PayBillsController::class, "store"])->name("paybillsStore");

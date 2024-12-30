@@ -6,10 +6,18 @@ use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Product;
+use App\Models\Invoice;
+use App\Models\Account;
+use App\Models\Pay_bills;
+use App\Models\Expenses;
+use App\Models\SalaryList;
+use App\Models\Payment_form;
+use App\Models\Emplooyee;
+use App\Models\Purchase;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
 class DoctorController extends Controller
 {
     /**
@@ -106,8 +114,136 @@ class DoctorController extends Controller
         $data['patient'] = Patient::count();
         $data['Appointment'] = Appointment::count();
         $data['product'] = Product::count();
-        return view('dashbourd', $data);
+        $data['balance'] = Emplooyee::count();
+        $data['balances']= Expenses::count('amount');
+    
+        // Current Month
+        $currentFromDate = Carbon::now()->startOfMonth()->toDateString();
+        $currentToDate = Carbon::now()->endOfMonth()->toDateString();
+    
+        $currentRevenues = Invoice::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+            + Payment_form::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+            + Appointment::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('net_fee');
+    
+        $currentExpenses = Pay_bills::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+            + Purchase::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+            + SalaryList::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('net_salary')
+            + Expenses::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount');
+    
+        $currentBalance = $currentRevenues - $currentExpenses;
+    
+        // Previous Month
+        $previousFromDate = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+        $previousToDate = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+    
+        $previousRevenues = Invoice::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+            + Payment_form::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+            + Appointment::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('net_fee');
+    
+        $previousExpenses = Pay_bills::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+            + Purchase::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+            + SalaryList::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('net_salary')
+            + Expenses::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount');
+    
+        $previousBalance = $previousRevenues - $previousExpenses;
+    
+        // Current Month Expenses
+        $currentCostOfGoodSold2 = Pay_bills::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid');
+        $currentCostOfGoodSold1 = Purchase::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid');
+        $currentEmployeeSalary = SalaryList::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('net_salary');
+        $currentManufacturerPayments = Expenses::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount');
+    
+        $currentCostOfGoodSold = $currentCostOfGoodSold2 + $currentCostOfGoodSold1;
+        $currentTotalExpenses = $currentManufacturerPayments + $currentCostOfGoodSold + $currentEmployeeSalary;
+    
+        // Previous Month Expenses
+        $previousCostOfGoodSold2 = Pay_bills::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid');
+        $previousCostOfGoodSold1 = Purchase::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid');
+        $previousEmployeeSalary = SalaryList::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('net_salary');
+        $previousManufacturerPayments = Expenses::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount');
+    
+        $previousCostOfGoodSold = $previousCostOfGoodSold2 + $previousCostOfGoodSold1;
+        $previousTotalExpenses = $previousManufacturerPayments + $previousCostOfGoodSold + $previousEmployeeSalary;
+    
+        // Calculate Percentage Change
+        $expenseChangePercentage = $previousTotalExpenses != 0 
+            ? (($currentTotalExpenses - $previousTotalExpenses) / $previousTotalExpenses) * 100 
+            : 0;
+            
+            
+            $currentFromDate = Carbon::now()->startOfMonth()->toDateString();
+            $currentToDate = Carbon::now()->endOfMonth()->toDateString();
+        
+            $currentEarnings = Invoice::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+                + Payment_form::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('amount_paid')
+                + Appointment::whereBetween('created_at', [$currentFromDate, $currentToDate])->sum('net_fee');
+        
+            // Previous Month
+            $previousFromDate = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+            $previousToDate = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+        
+            $previousEarnings = Invoice::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+                + Payment_form::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('amount_paid')
+                + Appointment::whereBetween('created_at', [$previousFromDate, $previousToDate])->sum('net_fee');
+        
+            // Calculate Percentage Change
+            $earningsChangePercentage = $previousEarnings != 0 
+                ? (($currentEarnings - $previousEarnings) / $previousEarnings) * 100 
+                : 0;
+                $invoices = Invoice::with('mypi', 'myacount')->get();
+                $payments = Payment_form::with('mypatient')->get(); // Replace with actual payment relationships
+                $data1 = [
+                    'invoices' => $invoices,
+                    'payments' => $payments,
+                ];
+  
+
+             $patients = Patient::all(); // Fetch all patients
+             $projects = Emplooyee::all();
+ 
+             $bestSellingProducts = Product::select('name', 'sale_price', 'stock')
+             ->orderBy('sale_price', 'desc') // Example: Order by highest sale price
+             ->limit(5) // Fetch top 5
+             ->get();
+             $bestSellingPatients = Patient::orderBy('balance', 'desc') // Sort by balance
+             ->take(5) // Fetch top 5 patients (adjust as needed)
+             ->get();
+            
+
+
+     
+             $accounts = Account::select()->take(5)->get();
+
+        // Pass data to the view
+        return view('dashbourd', array_merge(
+            $data, 
+            $data1, 
+            ['patients' => $patients], 
+            ['projects' => $projects],
+            ['bestSellingProducts' => $bestSellingProducts],
+            ['bestSellingPatients' => $bestSellingPatients],
+            ['accounts' => $accounts],// Wrap patients in an associative array
+            [
+                'currentBalance' => $currentBalance,
+                'previousBalance' => $previousBalance,
+                'currentExpenses' => $currentTotalExpenses,
+                'previousExpenses' => $previousTotalExpenses,
+                'expenseChangePercentage' => $expenseChangePercentage,
+                'currentEarnings' => $currentEarnings,
+                'previousEarnings' => $previousEarnings,
+                'earningsChangePercentage' => $earningsChangePercentage,
+            ]
+        ));
+        
     }
+    
+  
+
+    
+  
+
+        
+    
     public function userdashboard()
     {
         $data['Doctors'] = Doctor::count();

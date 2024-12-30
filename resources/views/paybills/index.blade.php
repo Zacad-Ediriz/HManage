@@ -75,7 +75,7 @@
 
     <!-- Table of Paybills -->
     <div class="table-responsive">
-        <table class="table table-striped" id="table">
+        <table class="table table-striped"  id="table">
             <thead>
                 <tr>
                     <th>#</th>
@@ -108,6 +108,10 @@
 
 @section('scripts')
     <script>
+    
+    $(document).ready(function() {
+            $("#table").DataTable();
+        });
         const amountInput = document.getElementById('amount');
         const amountPaidInput = document.getElementById('amount_paid');
         const balanceInput = document.getElementById('balance');
@@ -124,9 +128,12 @@
             const amountPaid = parseFloat(amountPaidInput.value || 0);
             balanceInput.value = (amount - amountPaid).toFixed(2);
         }
+        
 
         @if (\Session::has('message'))
             swal("Paybills!", "{{ \session::get('message') }}", "success");
         @endif
+        
+        
     </script>
 @endsection

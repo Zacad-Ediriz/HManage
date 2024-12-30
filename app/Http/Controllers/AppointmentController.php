@@ -23,17 +23,52 @@ class AppointmentController extends Controller
     //     return view('appointment.index', compact('appointments'));
     // }
     
-    public function index()
-{
-    // Load the 'doctor' and 'patient' relationships with the 'Appointment' model
-    $appointments = Appointment::with('mypi','pp')->get();
-   
-   
-
-    // Pass the appointments to the view
-    return view('appointment.index', compact('appointments'));
-
-}
+ 
+    
+    public function index(Request $request)
+    {
+        $query = Appointment::query();
+    
+        // Filter by date range
+        if ($request->has('date_filter') && $request->date_filter) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()]);
+                    break;
+                case 'this_month':
+                    $query->whereMonth('created_at', now()->month);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month);
+                    break;
+            }
+        }
+    
+        // Filter by patient name
+        if ($request->has('name') && $request->name) {
+            $query->whereHas('pp', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->name . '%');
+            });
+        }
+    
+       
+        // Return JSON response for AJAX
+        if ($request->ajax()) {
+            $appointments = $query->with(['mypi', 'pp'])->get();
+            return response()->json(['appointments' => $appointments]);
+        }
+    
+        // For non-AJAX requests
+        $appointments = $query->with(['mypi', 'pp'])->get();
+        return view('appointment.index', compact('appointments'));
+    }
+    
     
     
 // public function create()
@@ -130,6 +165,19 @@ public function store(Request $request)
 
     return redirect()->route('appointment.index')->with('success', 'Appointment Created and Payment Updated!');
 }
+public function show($id)
+{
+    $appointment = Appointment::with(['mypi', 'pp'])->find($id);
+
+    if (!$appointment) {
+        abort(404, 'Appointment not found');
+    }
+
+    
+
+    return view('appointment.show', compact('appointment'));
+}
+
 
 
 
@@ -277,10 +325,10 @@ public function storePayment(Request $request)
     /**
      * Display the specified resource.
      */
-    public function show(Appointment $appointment)
-    {
-        //
-    }
+    // public function show(Appointment $appointment)
+    // {
+    //     //
+    // }
 
     /**
      * Show the form for editing the specified resource.

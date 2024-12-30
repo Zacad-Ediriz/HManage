@@ -16,7 +16,7 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchase = Purchase::with('mypi')->get();
+      $purchase = Purchase::with(['mypii', 'mypi'])->get();
         $data['vendor'] = Vendor::get();
         $data['acount'] = Account::get();
         $data['product'] = Product::get();

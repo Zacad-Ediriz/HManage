@@ -175,13 +175,13 @@
                 @foreach ($purchase as $row)
                     <tr>
                         <td>{{ $row->id }}</td>
-                        <td>{{ $row->name }}</td>
+                        <td>{{ $row->mypi->name }}</td>
                         <td>{{ $row->total }}</td>
                         <td>{{ $row->discount }}</td>
                         <td>{{ $row->net_total }}</td>
                         <td>{{ $row->amount_paid }}</td>
                         <td>{{ $row->balance }}</td>
-                        <td>{{ $row->payment_method }}</td>
+                        <td>{{ $row->mypii?->account_name }}</td>
                         <td><a href="#" onclick="updatefn({{ $row['id'] }})" class="btn btn-success"><i
                                     class="fa fa-edit"></i> </a>
                             <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-trush">
