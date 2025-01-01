@@ -96,8 +96,10 @@
                         <td>${{ number_format($row->amount_paid, 2) }}</td>
                         <td>${{ number_format($row->balance, 2) }}</td>
                         <td>
-                            <a href="#" onclick="updatefn({{ $row['id'] }})" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Edit</a>
-                            <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</a>
+                            
+                            <a href="#" onclick="deletefn({{ $row['id'] }})" class="btn btn-danger btn-sm">
+                            <i class="fa fa-trash"></i> Delete</a>
+                            
                         </td>
                     </tr>
                 @endforeach
@@ -127,9 +129,34 @@
             const amountPaid = parseFloat(amountPaidInput.value || 0);
             balanceInput.value = (amount - amountPaid).toFixed(2);
         }
+        
+        const deletefn = (id) => {
+
+            url = "{{ route('paymentformDelete', ':id') }}"
+            url = url.replace(':id', id)
+            swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this imaginary file!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        location.replace(url)
+                    } else {
+                        swal("Your imaginary file is safe!");
+                    }
+                });
+
+}
+
 
         @if (\Session::has('message'))
             swal("Paybills!", "{{ \session::get('message') }}", "success");
         @endif
+        
+        
+        
     </script>
 @endsection

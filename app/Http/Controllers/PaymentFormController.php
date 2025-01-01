@@ -189,7 +189,108 @@ class PaymentFormController extends Controller
     
 
     
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+    
+        try {
+            // Find the payment form
+            $payment = Payment_form::findOrFail($id);
+    
+            // Retrieve related entities
+            $patient = Patient::findOrFail($payment->patient);
+            $account = Account::findOrFail($payment->paybills_method_id);
+    
+            // Adjust the patient's balance (add amount_paid back)
+            $newPatientBalance = $patient->balance + $payment->amount_paid;
+            $patient->update([
+                'balance' => $newPatientBalance,
+            ]);
+    
+            // Adjust the account balance (subtract amount_paid)
+            $newAccountBalance = $account->account_balance - $payment->amount_paid;
+            $account->update([
+                'account_balance' => $newAccountBalance,
+            ]);
+    
+            // Delete the payment form
+            $payment->delete();
+    
+            DB::commit();
+    
+            return redirect()->route('paymentform.index')->with('success', 'Payment form deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            \Log::error('Error deleting payment form', ['error' => $e->getMessage()]);
+            return redirect()->route('paymentform.index')->withErrors(['error' => 'Error deleting payment form: ' . $e->getMessage()]);
+        }
+    }
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'patient' => 'required|exists:patients,id',
+        'amount_paid' => 'required|numeric|min:0',
+        'paybills_method_id' => 'required|exists:account,id',
+        'balance' => 'required|numeric|min:0',
+    ]);
 
+    DB::beginTransaction();
+
+    try {
+        // Find the payment form
+        $payment = Payment_form::findOrFail($id);
+
+        // Retrieve related entities
+        $patient = Patient::findOrFail($payment->patient);
+        $account = Account::findOrFail($payment->paybills_method_id);
+
+        // Revert old balances
+        $patient->update(['balance' => $patient->balance + $payment->amount_paid]);
+        $account->update(['account_balance' => $account->account_balance - $payment->amount_paid]);
+
+        // Update payment form
+        $payment->update([
+            'amount_paid' => $request->amount_paid,
+            'balance' => $request->balance,
+            'paybills_method_id' => $request->paybills_method_id,
+        ]);
+
+        // Update new balances
+        $patient->update(['balance' => $patient->balance - $request->amount_paid]);
+        $account->update(['account_balance' => $account->account_balance + $request->amount_paid]);
+
+        DB::commit();
+
+        return redirect()->route('paymentform.index')->with('success', 'Payment form updated successfully.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->route('paymentform.index')->withErrors(['error' => 'Error updating payment form: ' . $e->getMessage()]);
+    }
+}
+
+public function edit($id)
+{
+    try {
+        $payment = Payment_form::findOrFail($id);
+
+        $response = [
+            'patient' => $payment->patient ?? '', // Assuming a relationship to Patient
+            'amount' => $payment->amount ?? '',
+            'amount_paid' => $payment->amount_paid ?? '',
+            'balance' => $payment->balance,
+            'paybills_method_id' => $payment->paybills_method_id ?? '', // Add remarks if it's a column in your table
+            
+           
+        ];
+
+        return response()->json([$response], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Payment form not found'], 404);
+    }
+}
+
+    
 
 
 

@@ -33,6 +33,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\SalaryGenerateController;
 use App\Http\Controllers\SalaryListController;
+use App\Http\Controllers\RefundController;
 
 
 
@@ -159,6 +160,18 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     Route::post('/getitemprice', [InvoiceController::class, "getitemprice"])->name("getitemprice");
     Route::post('/getSerivicePrice', [InvoiceController::class, "getSerivicePrice"])->name("getSerivicePrice");
     
+    
+    
+    Route::get('/refund', [RefundController::class, "index"])->name("refund");
+    Route::post('/refund', [RefundController::class, "store"])->name("refundStore");
+    Route::get('/refund/{id}', [RefundController::class, "edit"])->name("refundEdit");
+    Route::post('/refund/update/{id}', [RefundController::class, "update"])->name("refundUpdate");
+    Route::get('/refund/delete/{id}', [RefundController::class, "destroy"])->name("refundDelete");
+   // Route::post('/getItem', [RefundController::class, "getrefundItem"])->name("getrefundItem");
+    Route::post('/getpateintBalance', [RefundController::class, "getpateintBalance"])->name("getpateintBalance");
+    Route::post('/getitemprice', [RefundController::class, "getitemprice"])->name("getitemprice");
+    Route::post('/getSerivicePrice', [RefundController::class, "getSerivicePrice"])->name("getSerivicePrice");
+    
 
 
     Route::get('/purchase', [PurchaseController::class, "index"])->name("purchase");
@@ -179,6 +192,7 @@ Route::post("/", [LoginContoller::class, "logout"])->name("logout");
     // Route::post('/paymentform', [PaymentFormController::class, "store"])->name("paymentformStore");
     Route::get('/paymentform/{id}', [PaymentFormController::class, "edit"])->name("paymentformEdit");
     Route::post('/paymentform/update/{id}', [PaymentFormController::class, "update"])->name("paymentformUpdate");
+  
     Route::get('/paymentform/delete/{id}', [PaymentFormController::class, "destroy"])->name("paymentformDelete");
     Route::post('/getInvoiceBalance', [PaymentFormController::class, "getInvoiceBalance"])->name("getInvoiceBalance");
 

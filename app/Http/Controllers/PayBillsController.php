@@ -189,7 +189,43 @@ class PayBillsController extends Controller
 
 
 
-
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+    
+        try {
+            // Find the payment form
+            $payment = Pay_bills::findOrFail($id);
+    
+            // Retrieve related entities
+            $patient = Vendor::findOrFail($payment->vendor);
+            $account = Account::findOrFail($payment->paybills_method_id);
+    
+            // Adjust the patient's balance (add amount_paid back)
+            $newPatientBalance = $patient->balance + $payment->amount_paid;
+            $patient->update([
+                'balance' => $newPatientBalance,
+            ]);
+    
+            // Adjust the account balance (subtract amount_paid)
+            $newAccountBalance = $account->account_balance + $payment->amount_paid;
+            $account->update([
+                'account_balance' => $newAccountBalance,
+            ]);
+    
+            // Delete the payment form
+            $payment->delete();
+    
+            DB::commit();
+    
+            return redirect()->route('paybills.index')->with('success', 'Payment form deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            \Log::error('Error deleting payment form', ['error' => $e->getMessage()]);
+            return redirect()->route('paybills.index')->withErrors(['error' => 'Error deleting payment form: ' . $e->getMessage()]);
+        }
+    }
 
 
 

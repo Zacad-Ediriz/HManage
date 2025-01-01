@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
-use App\Models\Invoice_detail;
+use App\Models\Refunded;
+use App\Models\Refunded_detail;
 use App\Models\Patient;
 use App\Models\Account;
 use App\Models\Service;
@@ -12,14 +12,14 @@ use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class InvoiceController extends Controller
+class RefundController extends Controller
 {
     public function index()
     {
-        $invoice = Invoice::with('mypi', 'myacount')->get();
+        $invoice = Refunded::with('mypi', 'myacount')->get();
         $data['patient'] = Patient::get();   
         $data['acount'] = Account::get();
-        return view('invoice.index', compact('invoice'), $data);
+        return view('refund.index', compact('invoice'), $data);
     }
 
     /**
@@ -27,7 +27,7 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        return view('invoice.index');
+        return view('refund.index');
     }
 
     /**
@@ -68,18 +68,18 @@ class InvoiceController extends Controller
         $validatedData["payment_status"] =  $payment_status;
 
         $validatedData["appointment_status"] = "0";
-        $myinvoice = Invoice::create($validatedData);
+        $myinvoice = Refunded::create($validatedData);
 
         for ($i = 0; $i < count($request->type); $i++) {
-            Invoice_detail::create([
-                'invoice_id' => $myinvoice->id,
+            Refunded_detail::create([
+                'refund_id' => $myinvoice->id,
                 'type' => $request->type[$i],
                 'product' => $request->item[$i],
                 'qty' => $request->qty[$i],
                 'price' => $request->price[$i],
             ]);
             $product = Product::where('id', $request->item[$i])->first();
-            $qtyproduct = $product->stock - $request->qty[$i];
+            $qtyproduct = $product->stock + $request->qty[$i];
             $product->update([
                 "stock" => $qtyproduct,
             ]);
@@ -90,7 +90,7 @@ class InvoiceController extends Controller
         $myBalance = $account->account_balance;
 
         $account->update([
-            "account_balance" => $myBalance + $request->amount_paid,
+            "account_balance" => $myBalance - $request->amount_paid,
         ]);
 
         $patient = Patient::where('id', $request->patient)->first();
@@ -102,7 +102,7 @@ class InvoiceController extends Controller
 
 
         DB::commit();
-        return redirect('invoice')->with('message', 'invoice added successfully');
+        return redirect('refund')->with('message', 'invoice added successfully');
     }
 
     /**
@@ -110,7 +110,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        return Invoice::where('id', $id)->get();
+        return Refunded::where('id', $id)->get();
     }
 
     /**
@@ -118,7 +118,7 @@ class InvoiceController extends Controller
      */
     public function edit(string $id)
     {
-        return Invoice::where('id', $id)->get();
+        return Refunded::where('id', $id)->get();
     }
 
     /**
@@ -126,7 +126,7 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Invoice::find($id)->update([
+        Refunded::find($id)->update([
             "name" => $request->name,
             "phone" => $request->phone,
             "sex" => $request->sex,
@@ -137,61 +137,19 @@ class InvoiceController extends Controller
 
 
         ]);
-        return redirect('invoice')->with('message', 'data updated');
+        return redirect('refund')->with('message', 'data updated');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
-        DB::beginTransaction();
-    
-        try {
-            // Retrieve the invoice
-            $invoice = Invoice::findOrFail($id);
-    
-            // Retrieve related details
-            $invoiceDetails = Invoice_detail::where('invoice_id', $id)->get();
-            $account = Account::where('id', $invoice->payment_method)->first();
-            $patient = Patient::where('id', $invoice->patient)->first();
-    
-            // Adjust the account balance (subtract amount_paid)
-            $newAccountBalance = $account->account_balance - $invoice->amount_paid;
-            $account->update([
-                "account_balance" => $newAccountBalance,
-            ]);
-    
-            // Restore the patient's balance (revert to balance before invoice creation)
-            $newPatientBalance = ($patient->balance +$invoice->amount_paid)  - $invoice->total;
-            $patient->update([
-                "balance" => $newPatientBalance,
-            ]);
-    
-            // Restore product quantities
-            foreach ($invoiceDetails as $detail) {
-                $product = Product::where('id', $detail->product)->first();
-                $restoredStock = $product->stock + $detail->qty;
-                $product->update([
-                    "stock" => $restoredStock,
-                ]);
-    
-                // Delete the invoice detail
-                $detail->delete();
-            }
-    
-            // Delete the invoice
-            $invoice->delete();
-    
-            DB::commit();
-    
-            return redirect('invoice')->with('message', 'Invoice deleted successfully');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect('invoice')->with('error', 'Error deleting invoice: ' . $e->getMessage());
-        }
+        Refunded::find($id)->delete();
+        Refunded_detail::where('invoice_id', $id)->delete();
+        
+        return redirect('refund')->with('message', 'data deleted');
     }
-    
 
     public function getInvoiceItem(Request $request)
     {
